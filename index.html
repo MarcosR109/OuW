@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio con Tone.js</title>
+    <title>OW</title>
     <style>
         body {
             margin: 0;
@@ -18,15 +18,43 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Fondo detrás de otros elementos */
+            z-index: -1;
+            /* Fondo detrás de otros elementos */
         }
 
         .content {
+            display: none;
+            /* Ocultar el contenido inicialmente */
             position: relative;
-            z-index: 1; /* Asegura que los elementos estén encima del canvas */
+            z-index: 1;
+            /* Asegura que los elementos estén encima del canvas */
             padding: 20px;
             color: white;
             text-align: center;
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        #startButton {
+            background-color: #ffffff;
+            color: #000;
+            border: 1px solid #ffffff;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
         button {
@@ -43,6 +71,9 @@
 </head>
 
 <body>
+    <div id="startScreen">
+        <button id="startButton">Iniciar</button>
+    </div>
     <canvas id="starCanvas"></canvas>
     <div class="flex-column content">
         <div>
@@ -76,17 +107,14 @@
         <button id="toggleReverb">Activar/Desactivar Reverb</button>
         <button id="toggleDelay">Activar/Desactivar Delay</button>
         <button id="toggleChorus">Activar/Desactivar Chorus</button>
-        <!--<button id="toggleLoFi">Lo-Fi</button>-->
         <button id="effects">Desactivar efectos</button>
         <button id="random">Random</button>
     </div>
 
     <script src="node_modules/tone/build/Tone.js"></script>
     <script>
-        let reverbEnabled = false;
-        let delayEnabled = false;
-        let chorusEnabled = false;
-        let loFiEnabled = false;
+        let sounds;
+        let audioInitialized = false;
 
         const reverb = new Tone.Reverb({ decay: 5, wet: 0.9 }).toDestination();
         const delay = new Tone.FeedbackDelay({ delayTime: 0.05, wet: 0.7 }).toDestination();
@@ -98,25 +126,33 @@
         const loFiGain = new Tone.Gain(0.8).toDestination();
         const loFiChain = new Tone.Gain();
         loFiChain.chain(lowPassFilter, bitCrusher, loFiGain);
-        addEventListener("DOMContentLoaded", () => {
-            sounds = {
-                Drums: new Tone.Player({ url: 'audio/Drums.wav', loop: true, volume: -Infinity }).toDestination(),
-                Guitar: new Tone.Player({ url: 'audio/Banjo.wav', loop: true, volume: -Infinity }).toDestination(),
-                Whistle: new Tone.Player({ url: 'audio/Whistle.wav', loop: true, volume: -Infinity }).toDestination(),
-                Theremin: new Tone.Player({ url: 'audio/Theremin.wav', loop: true, volume: -Infinity }).toDestination(),
-                Piano: new Tone.Player({ url: 'audio/Piano.wav', loop: true, volume: -Infinity }).toDestination(),
-                Flute: new Tone.Player({ url: 'audio/Flute.wav', loop: true, volume: -Infinity }).toDestination(),
-                Harmonica: new Tone.Player({ url: 'audio/Harmonica.wav', loop: true, volume: -Infinity }).toDestination()
-            };
 
+        document.getElementById("startButton").addEventListener("click", async () => {
+            if (!audioInitialized) {
+                await Tone.start(); // Inicia el contexto de audio
+                sounds = {
+                    Drums: new Tone.Player({ url: 'audio/Drums.wav', loop: true, volume: -Infinity }).toDestination(),
+                    Guitar: new Tone.Player({ url: 'audio/Banjo.wav', loop: true, volume: -Infinity }).toDestination(),
+                    Whistle: new Tone.Player({ url: 'audio/Whistle.wav', loop: true, volume: -Infinity }).toDestination(),
+                    Theremin: new Tone.Player({ url: 'audio/Theremin.wav', loop: true, volume: -Infinity }).toDestination(),
+                    Piano: new Tone.Player({ url: 'audio/Piano.wav', loop: true, volume: -Infinity }).toDestination(),
+                    Flute: new Tone.Player({ url: 'audio/Flute.wav', loop: true, volume: -Infinity }).toDestination(),
+                    Harmonica: new Tone.Player({ url: 'audio/Harmonica.wav', loop: true, volume: -Infinity }).toDestination()
+                };
+                await Tone.loaded(); // Espera a que se carguen los sonidos
+
+                // Inicia la reproducción de todos los sonidos en silencio
+                Object.values(sounds).forEach(sound => {
+                    sound.start(); // Inicia la reproducción
+                    sound.volume.value = -Infinity; // Asegura que están en silencio
+                });
+
+                audioInitialized = true;
+                document.getElementById("startScreen").style.display = "none"; // Ocultar la pantalla de inicio
+                document.querySelector(".content").style.display = "block"; // Mostrar el contenido principal
+                console.log("AudioContext iniciado");
+            }
         });
-        window.onload = async () => {
-            await Tone.start();
-            await Tone.loaded();
-            console.log('cargado');
-            Object.values(sounds).forEach(sound => sound.start());
-        };
-
         function play(element) {
             const instrument = element.innerText;
             const sliderValue = element.nextElementSibling.value;
@@ -126,26 +162,22 @@
         }
 
         function changeVolume(slider, instrument) {
+            console.log("bu");
             if (sounds[instrument]) {
                 sounds[instrument].volume.value = Tone.gainToDb(parseFloat(slider.value));
             }
         }
 
         function activateEffect(effectName) {
-            reverbEnabled = delayEnabled = chorusEnabled = loFiEnabled = false;
             Object.values(sounds).forEach(sound => sound.disconnect().toDestination());
 
             if (effectName === 'reverb') {
-                reverbEnabled = true;
                 Object.values(sounds).forEach(sound => sound.connect(reverb));
             } else if (effectName === 'delay') {
-                delayEnabled = true;
                 Object.values(sounds).forEach(sound => sound.connect(delay));
             } else if (effectName === 'chorus') {
-                chorusEnabled = true;
                 Object.values(sounds).forEach(sound => sound.connect(chorus));
             } else if (effectName === 'loFi') {
-                loFiEnabled = true;
                 Object.values(sounds).forEach(sound => sound.connect(loFiChain));
             }
         }
@@ -153,41 +185,7 @@
         document.getElementById('toggleReverb').addEventListener('click', () => activateEffect('reverb'));
         document.getElementById('toggleDelay').addEventListener('click', () => activateEffect('delay'));
         document.getElementById('toggleChorus').addEventListener('click', () => activateEffect('chorus'));
-        //document.getElementById('toggleLoFi').addEventListener('click', () => activateEffect('loFi'));
         document.getElementById('effects').addEventListener('click', () => activateEffect('none'));
-
-        document.getElementById('random').addEventListener('click', () => {
-            randomTimes = Math.floor(Math.random() * 7) + 1;
-            ranMap = {
-                0: 'Drums',
-                1: 'Guitar',
-                2: 'Whistle',
-                3: 'Theremin',
-                4: 'Piano',
-                5: 'Flute',
-                6: 'Harmonica'
-            };
-            Object.entries(sounds).forEach(([key, value]) => {
-                obtenerInstrumentoYSliderHTML(key)[1].value = 0;
-                value.volume.value = -Infinity;
-            });
-            for (let i = 0; i < randomTimes; i++) {
-                random = Math.floor(Math.random() * 7);
-                instrumento = ranMap[random];
-                sounds[instrumento].volume.value = 1;
-                obtenerInstrumentoYSliderHTML(instrumento)[1].value = 1;
-            }
-        });
-
-
-        function obtenerInstrumentoYSliderHTML(instrumento) {
-            for (let i = 0; i < document.getElementsByTagName('button').length; i++) {
-                if (document.getElementsByTagName('button')[i].innerText == instrumento) {
-                    slider = document.getElementsByTagName('button')[i].nextElementSibling;
-                    return [document.getElementsByTagName('button')[i], slider];
-                }
-            }
-        }
     </script>
     <script src="canvas.js"></script>
 </body>

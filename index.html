@@ -116,20 +116,21 @@
         let sounds;
         let audioInitialized = false;
 
-        const reverb = new Tone.Reverb({ decay: 5, wet: 0.9 }).toDestination();
-        const delay = new Tone.FeedbackDelay({ delayTime: 0.05, wet: 0.7 }).toDestination();
-        const chorus = new Tone.Chorus({ frequency: 1.5, delayTime: 3, depth: 0.7, spread: 180, wet: 0.9 }).toDestination();
 
-        // Configurar efecto Lo-Fi
-        const lowPassFilter = new Tone.Filter({ frequency: 800, type: 'lowpass', rolloff: -24 });
-        const bitCrusher = new Tone.BitCrusher({ bits: 4 });
-        const loFiGain = new Tone.Gain(0.8).toDestination();
-        const loFiChain = new Tone.Gain();
-        loFiChain.chain(lowPassFilter, bitCrusher, loFiGain);
 
         document.getElementById("startButton").addEventListener("click", async () => {
             if (!audioInitialized) {
                 await Tone.start(); // Inicia el contexto de audio
+                const reverb = new Tone.Reverb({ decay: 5, wet: 0.9 }).toDestination();
+                const delay = new Tone.FeedbackDelay({ delayTime: 0.05, wet: 0.7 }).toDestination();
+                const chorus = new Tone.Chorus({ frequency: 1.5, delayTime: 3, depth: 0.7, spread: 180, wet: 0.9 }).toDestination();
+
+                // Configurar efecto Lo-Fi
+                const lowPassFilter = new Tone.Filter({ frequency: 800, type: 'lowpass', rolloff: -24 });
+                const bitCrusher = new Tone.BitCrusher({ bits: 4 });
+                const loFiGain = new Tone.Gain(0.8).toDestination();
+                const loFiChain = new Tone.Gain();
+                loFiChain.chain(lowPassFilter, bitCrusher, loFiGain);
                 sounds = {
                     Drums: new Tone.Player({ url: 'audio/Drums.wav', loop: true, volume: -Infinity }).toDestination(),
                     Guitar: new Tone.Player({ url: 'audio/Banjo.wav', loop: true, volume: -Infinity }).toDestination(),

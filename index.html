@@ -111,7 +111,7 @@
         <button id="random">Random</button>
     </div>
 
-    <script src="tone/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.js"></script>
     <script>
         let sounds;
         let audioInitialized = false;
@@ -183,6 +183,38 @@
             }
         }
 
+        document.getElementById('random').addEventListener('click', () => {
+            randomTimes = Math.floor(Math.random() * 7) + 1;
+            ranMap = {
+                0: 'Drums',
+                1: 'Guitar',
+                2: 'Whistle',
+                3: 'Theremin',
+                4: 'Piano',
+                5: 'Flute',
+                6: 'Harmonica'
+            };
+            Object.entries(sounds).forEach(([key, value]) => {
+                obtenerInstrumentoYSliderHTML(key)[1].value = 0;
+                value.volume.value = -Infinity;
+            });
+            for (let i = 0; i < randomTimes; i++) {
+                random = Math.floor(Math.random() * 7);
+                instrumento = ranMap[random];
+                sounds[instrumento].volume.value = 1;
+                obtenerInstrumentoYSliderHTML(instrumento)[1].value = 1;
+            }
+        });
+
+
+        function obtenerInstrumentoYSliderHTML(instrumento) {
+            for (let i = 0; i < document.getElementsByTagName('button').length; i++) {
+                if (document.getElementsByTagName('button')[i].innerText == instrumento) {
+                    slider = document.getElementsByTagName('button')[i].nextElementSibling;
+                    return [document.getElementsByTagName('button')[i], slider];
+                }
+            }
+        }
         document.getElementById('toggleReverb').addEventListener('click', () => activateEffect('reverb'));
         document.getElementById('toggleDelay').addEventListener('click', () => activateEffect('delay'));
         document.getElementById('toggleChorus').addEventListener('click', () => activateEffect('chorus'));

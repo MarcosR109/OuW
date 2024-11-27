@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OW</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
     <style>
         body {
             margin: 0;
@@ -25,12 +28,10 @@
         .content {
             display: none;
             /* Ocultar el contenido inicialmente */
-            position: relative;
             z-index: 1;
             /* Asegura que los elementos estén encima del canvas */
             padding: 20px;
             color: white;
-            text-align: center;
         }
 
         #startScreen {
@@ -75,39 +76,48 @@
         <button id="startButton">Iniciar</button>
     </div>
     <canvas id="starCanvas"></canvas>
-    <div class="flex-column content">
-        <div>
-            <button onclick="play(this)">Drums</button>
-            <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Drums')">
+
+    <div class="container content col-lg-12" style="height: 100%;">
+        <div class="row justify-content-between container p-5">
+            <div class="col-3  d-flex flex-column align-items-center">
+                <button onclick="play(this)">Drums</button>
+                <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Drums')">
+            </div>
+            <div class="col-3  d-flex flex-column align-items-center">
+                <button onclick="play(this)">Guitar</button>
+                <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Guitar')">
+            </div>
+            <div class="col-3  d-flex flex-column align-items-center">
+                <button onclick="play(this)">Whistle</button>
+                <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Whistle')">
+            </div>
+            <div class="col-3  d-flex flex-column align-items-center">
+                <button onclick="play(this)">Theremin</button>
+                <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Theremin')">
+            </div>
         </div>
-        <div>
-            <button onclick="play(this)">Guitar</button>
-            <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Guitar')">
+        <div class="row container justify-content-between p-5">
+            <div class="col-4 d-flex flex-column align-items-center">
+                <button onclick="play(this)">Piano</button>
+                <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Piano')">
+            </div>
+            <div class="col-4  d-flex flex-column align-items-center ">
+                <button onclick="play(this)">Flute</button>
+                <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Flute')">
+            </div>
+            <div class="col-4  d-flex flex-column align-items-center">
+                <button onclick="play(this)">Harmonica</button>
+                <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Harmonica')">
+            </div>
         </div>
-        <div>
-            <button onclick="play(this)">Whistle</button>
-            <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Whistle')">
+        <div class="container">
+            <div class="row col-12">
+                <button id="toggleReverb">Activar/Desactivar Reverb</button>
+                <button id="toggleDelay">Activar/Desactivar Delay</button>
+                <button id="toggleChorus">Activar/Desactivar Chorus</button>
+                <button id="effects">Desactivar efectos</button>
+            </div>
         </div>
-        <div>
-            <button onclick="play(this)">Theremin</button>
-            <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Theremin')">
-        </div>
-        <div>
-            <button onclick="play(this)">Piano</button>
-            <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Piano')">
-        </div>
-        <div>
-            <button onclick="play(this)">Flute</button>
-            <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Flute')">
-        </div>
-        <div>
-            <button onclick="play(this)">Harmonica</button>
-            <input type="range" min="0" max="1" step="0.01" value="0" onchange="changeVolume(this, 'Harmonica')">
-        </div>
-        <button id="toggleReverb">Activar/Desactivar Reverb</button>
-        <button id="toggleDelay">Activar/Desactivar Delay</button>
-        <button id="toggleChorus">Activar/Desactivar Chorus</button>
-        <button id="effects">Desactivar efectos</button>
         <button id="random">Random</button>
     </div>
 
